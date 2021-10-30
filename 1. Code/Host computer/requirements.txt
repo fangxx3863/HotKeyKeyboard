@@ -1,0 +1,5 @@
+serial
+pySerial
+pyuserinput
+PyObjC 
+PyObjC-core
