@@ -38,10 +38,10 @@ SW1 = "Command"
 SW2 = "Shift"
 
 # 组合键列表
-MkeyA = ['Command', "-"]
-MkeyB = ['Command', "="]
-MkeyC = ['space', ]
-MkeyD = ['D', ]
+MkeyA = ['A', ]
+MkeyB = ['Space']
+MkeyC = ['Command', "-"]
+MkeyD = ['Command', "="]
 
 MkeyE = ['E', ]
 MkeyF = ['F', ]

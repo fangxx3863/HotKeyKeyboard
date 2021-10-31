@@ -1,3 +1,5 @@
-brew install pkg-config
-brew install cairo
-brew install gobject-introspection
+serial
+pySerial
+pyuserinput
+PyObjC 
+PyObjC-core
