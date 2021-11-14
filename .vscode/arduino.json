@@ -2,6 +2,6 @@
     "configuration": "cpu=atmega328old",
     "board": "arduino:avr:nano",
     "programmer": "arduino:avrispmkii",
-    "port": "/dev/cu.usbserial-1A1320",
+    "port": "/dev/cu.usbserial-1A140",
     "sketch": "1. Code/Lower computer/main.ino"
 }

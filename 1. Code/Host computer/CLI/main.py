@@ -243,30 +243,30 @@ def singleSW():
         print("Key SW2 Release")
 
 def ECMultiple():
-    if recv == "D1_1_P":
+    if recv == "D1_1":
         k.press_keys(EC1p)
         print("Key EC1+ Press")
-    elif recv == "D1_-1_P":
+    elif recv == "D1_-1":
         k.press_keys(EC1r)
         print("Key EC1- Press")
-    if recv == "D2_1_P":
+    if recv == "D2_1":
         k.press_keys(EC2p)
         print("Key EC2+ Press")
-    elif recv == "D2_-1_P":
+    elif recv == "D2_-1":
         k.press_keys(EC2r)
         print("Key EC2- Press")
 
 def ECScroll():
-    if recv == "D1_1_P":
+    if recv == "D1_1":
         m.scroll(-1, 0)
         print("Key EC1+ Press")
-    elif recv == "D1_-1_P":
+    elif recv == "D1_-1":
         m.scroll(1, 0)
         print("Key EC1- Press")
-    if recv == "D2_1_P":
+    if recv == "D2_1":
         m.scroll(0, -1)
         print("Key EC2+ Press")
-    elif recv == "D2_-1_P":
+    elif recv == "D2_-1":
         m.scroll(0, 1)
         print("Key EC2- Press")
 

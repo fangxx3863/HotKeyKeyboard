@@ -79,6 +79,12 @@ int led = 0;
 void loop()
 {
 
+    if (Serial.available()) {
+        if (Serial.find((char*)"Check")) {
+            Serial.println("this");
+        }
+    }
+
     if (keypad.getKeys())
     {
 
@@ -107,6 +113,7 @@ void loop()
         }
     }
 
+    /**
     if (rgbCtrl == "L_H") {
         K1 = 1;
     }else if (rgbCtrl == "L_I") {
@@ -124,13 +131,13 @@ void loop()
     }
     
     if (Kt == 0) {
-        rainbowCycle(120);
+        rainbowCycle(100);
         //Serial.println(rgbCtrl);
     }else if (Kt == 1) {
-        rainbow(120);
+        rainbow(100);
     }
-    
-    
+    **/
+    rainbowCycle(100);
     
 
     static int pos1 = 0;
@@ -139,8 +146,7 @@ void loop()
     if (pos1 != newPos1)
     {
         Serial.print("D1_");
-        Serial.print((int)(encoder1.getDirection()));
-        Serial.println("_P");
+        Serial.println((int)(encoder1.getDirection()));
         pos1 = newPos1;
     }
     if (digitalRead(PIN_SW1) == LOW && SW1 == 0)
@@ -160,8 +166,7 @@ void loop()
     if (pos2 != newPos2)
     {
         Serial.print("D2_");
-        Serial.print((int)(encoder2.getDirection()));
-        Serial.println("_P");
+        Serial.println((int)(encoder2.getDirection()));
         pos2 = newPos2;
     }
     if (digitalRead(PIN_SW2) == LOW && SW2 == 0)
