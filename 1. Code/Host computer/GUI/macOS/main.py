@@ -186,7 +186,7 @@ def setKey(setKeyValue, newConfValue):
                     elif nowConf[PdevKeys[i]] == 'down':
                         m.scroll(0, 1)
                     else:
-                        k.press_keys(nowConf[PdevKeys[i]])
+                        k.press_key(nowConf[PdevKeys[i]])
         for i in RdevKeys.keys():
             if newConfValue.value == 1:     # 当按下新建配置后重新读取配置文件中的全部配置
                 allList = readList()

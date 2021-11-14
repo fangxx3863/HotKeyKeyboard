@@ -73,6 +73,11 @@ def readList():     # 获取全部配置名称
     List = config.keys()
     return List     # 返回值为一个列表包含全部配置名称
 
+def delList(List):
+    config = ConfigObj("setting.ini",encoding='UTF8')
+    del config[List]
+    config.write()
+
 def decodeList(Cmd):        # 解码多按键
     if "+" in Cmd:
         decodeCmd = Cmd.split('+')
@@ -181,7 +186,7 @@ def setKey(setKeyValue, newConfValue):
                     elif nowConf[PdevKeys[i]] == 'down':
                         m.scroll(0, -1)
                     else:
-                        k.press_keys(nowConf[PdevKeys[i]])
+                        k.press_key(nowConf[PdevKeys[i]])
         for i in RdevKeys.keys():
             if newConfValue.value == 1:     # 当按下新建配置后重新读取配置文件中的全部配置
                 allList = readList()
@@ -219,7 +224,7 @@ def gui():
         [sg.Text('K09'), sg.InputText('K09', key='K09', size=(10, 8), font=(FONT3)), sg.Text('K10'), sg.InputText('K10', key='K10', size=(10, 8), font=(FONT3)), sg.Text('K11'), sg.InputText('K11', key='K11', size=(10, 8), font=(FONT3)), sg.Text('K12'), sg.InputText('K12', key='K12', size=(10, 8), font=(FONT3)), ],
         [sg.HorizontalSeparator()],
 
-        [sg.Combo(Comobo, size=(8, 1), font=(FONT2), key='_nowList', default_value="DEFAULT"), sg.Btn('新建配置', key='_newConf', font=(FONT2), size=(6, 1)), sg.Btn('读取配置', key='_readConf', font=(FONT2), size=(6, 1)), sg.Btn('保存配置', key='_saveConf', font=(FONT2), size=(6, 1)), sg.Btn('配置说明', key='_aboutConf', font=(FONT2), size=(6, 1)), sg.Btn('关于', key='_about', font=(FONT2), size=(6, 1))]
+        [sg.Combo(Comobo, size=(8, 1), font=(FONT2), key='_nowList', default_value="DEFAULT"), sg.Btn('新建配置', key='_newConf', font=(FONT2), size=(8, 1)), sg.Btn('删除配置', key='_delConf', font=(FONT2), size=(8, 1)), sg.Btn('读取配置', key='_readConf', font=(FONT2), size=(8, 1)), sg.Btn('保存配置', key='_saveConf', font=(FONT2), size=(8, 1)), sg.Btn('配置说明', key='_aboutConf', font=(FONT2), size=(8, 1)), sg.Btn('关于', key='_about', font=(FONT2), size=(8, 1))]
 
     ]
     # 创建窗口，引入布局，并进行初始化
@@ -264,6 +269,12 @@ def gui():
             i = 0
             for i in uiKeys:
                 writeConf(i, value[i], value['_nowList'])       # 更新选定配置文件的值到GUI
+        
+        if event == '_delConf':
+            nowList = value['_nowList']     # 读GUI里的选配置下拉菜单的值
+            delList(nowList)
+            Comobo = readList()     # 获取现在配置文件中的全部配置（列表）
+            window.Element("_nowList").Update(value='DEFAULT', values=Comobo)     # 更新下拉菜单
         
         if event == '_aboutConf':
             sg.PopupAnnoying('配置说明\n1. 按下单个按键请输入单个按键名称\n2. 按下多个按键请以“+”为分隔符输入多个按键名称\n3. 鼠标滚轮对应键为，上：up，下：down，左：left，右：right\n4. 多功能键请输入全称，如Command，Alt，Ctrl', font=(FONT2))
