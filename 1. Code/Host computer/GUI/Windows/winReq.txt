@@ -1,0 +1,7 @@
+pywin32
+https://github.com/zxcV32/krispyKeyLogger/blob/master/victim/pyHook-1.5.1-cp37-cp37m-win_amd64.whl?raw=true
+serial
+pySerial
+pyuserinput
+PySimpleGUI
+ConfigObj

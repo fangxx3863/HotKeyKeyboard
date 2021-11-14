@@ -1,7 +1,0 @@
-serial
-pySerial
-pyuserinput
-PyObjC 
-PyObjC-core
-PySimpleGUI
-ConfigObj
