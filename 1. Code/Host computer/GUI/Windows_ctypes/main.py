@@ -25,6 +25,8 @@ from VirtualKey import keybd_event, scancode_down_up, scancodes, down_up
 import bdtime
 import VirtualKey
 
+import retrying
+from retrying import retry
 
 m = PyMouse()
 k = PyKeyboard()
@@ -152,11 +154,12 @@ def choiceValue(callback, t):
     decodeValue = callback[t]
     return decodeValue
 
+@retry(wait_fixed=500)
 def serial_ports():
     if sys.platform.startswith('win'):
         ports = ['COM%s' % (i + 1) for i in range(256)]
     elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
-        # this excludes your current terminal"/dev/tty"
+        # 这不包括当前的终端"/dev/tty"
         ports = glob.glob('/dev/tty[A-Za-z]*')
     elif sys.platform.startswith('darwin'):
         ports = glob.glob('/dev/tty.*')
@@ -171,6 +174,9 @@ def serial_ports():
             result.append(port)
         except (OSError, serial.SerialException):
             pass
+    if len(result) == 0:
+        s.close()
+        raise Exception     # 结果为空抛出异常
     return result
 
 def readLowPc(ser):
@@ -224,7 +230,13 @@ def setKey(setKeyValue, newConfValue):
             allList = readList()
             nowConf = readConf(allList[setKeyValue.value])      # CMD的字典
             newConfValue.value = 0
-        key = readLowPc(ser)        # 读取下位机回报数据
+
+        try:
+            key = readLowPc(ser)        # 读取下位机回报数据
+        except:
+            device = findDevice()       # 查找下位机设备ID
+            ser = serial.Serial(device, 115200)     # 初始化下位机读取
+            key = readLowPc(ser)        # 读取下位机回报数据
 
         # Press
         for i in PdevKeys.keys():
@@ -237,13 +249,13 @@ def setKey(setKeyValue, newConfValue):
                     PressKeys(decodeList(nowConf[PdevKeys[i]]))      # 有问题，暂时用回旧方案（已修复）
                     # k.press_keys(decodeList(nowConf[PdevKeys[i]]))
                 elif checkList(nowConf[PdevKeys[i]]) is False:      # 没有加号
-                    if nowConf[PdevKeys[i]] == 'left':
+                    if nowConf[PdevKeys[i]] == 'up':
                         m.scroll(1, 0)
-                    elif nowConf[PdevKeys[i]] == 'right':
-                        m.scroll(-1, 0)
-                    elif nowConf[PdevKeys[i]] == 'up':
-                        m.scroll(0, 1)
                     elif nowConf[PdevKeys[i]] == 'down':
+                        m.scroll(-1, 0)
+                    elif nowConf[PdevKeys[i]] == 'left':
+                        m.scroll(0, 1)
+                    elif nowConf[PdevKeys[i]] == 'right':
                         m.scroll(0, -1)
                     else:
                         PressKey(conv_ord(nowConf[PdevKeys[i]]))

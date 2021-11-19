@@ -6,3 +6,4 @@ pySerial
 pyuserinput
 PySimpleGUI
 ConfigObj
+retrying
