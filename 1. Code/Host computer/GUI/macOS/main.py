@@ -95,7 +95,7 @@ def choiceValue(callback, t):
     decodeValue = callback[t]
     return decodeValue
 
-@retry(wait_fixed=500)
+@retry(wait_fixed=1000)
 def serial_ports():
     if sys.platform.startswith('win'):
         ports = ['COM%s' % (i + 1) for i in range(256)]
@@ -164,6 +164,9 @@ def setKey(setKeyValue, newConfValue):
                 'I_R': 'K09', 'J_R': 'K10', 'K_R': 'K11', 'L_R': 'K12',
                 'SW1_R': 'EC1_SW', 'SW2_R': 'EC2_SW'}       # 下位机按键松开的回报值字典
     
+    ECKeys = ['D1_1', 'D1_-1', 
+              'D2_1', 'D2_-1']      # 全部EC键
+    
     allList = readList()        # 读取配置文件中的全部配置
     nowConf = readConf(allList[setKeyValue.value])      # CMD的字典
     while True:
@@ -199,6 +202,9 @@ def setKey(setKeyValue, newConfValue):
                         m.scroll(0, 1)
                     else:
                         k.press_key(nowConf[PdevKeys[i]])
+                        for ec in ECKeys:       # Fix旋钮释放错误
+                            if ec == key:
+                                k.release_key(nowConf[PdevKeys[i]])
                         
         for i in RdevKeys.keys():
             if newConfValue.value == 1:     # 当按下新建配置后重新读取配置文件中的全部配置

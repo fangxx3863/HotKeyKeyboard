@@ -284,11 +284,10 @@ def setKey(setKeyValue, newConfValue):
                         m.scroll(0, -1)
                     else:
                         dm.KeyDown(conv_ord(nowConf[PdevKeys[i]]))
-
-                for ec in ECKeys:       # Fix旋钮释放错误
-                    if ec == key:
-                        print('ECRelese')
-                        dm.KeyUp(conv_ord(nowConf[PdevKeys[i]]))
+                        for ec in ECKeys:       # Fix旋钮释放错误
+                            if ec == key:
+                                print('ECRelese')
+                                dm.KeyUp(conv_ord(nowConf[PdevKeys[i]]))
 
                     
 

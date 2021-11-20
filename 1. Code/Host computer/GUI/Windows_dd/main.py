@@ -284,10 +284,9 @@ def setKey(setKeyValue, newConfValue):
                         m.scroll(0, -1)
                     else:
                         dd_dll.DD_key(dd_dll.DD_todc(conv_ord(Pnk)), 1)
-                
-                for ec in ECKeys:       # Fix旋钮释放错误
-                    if ec == key:
-                        dd_dll.DD_key(dd_dll.DD_todc(conv_ord(Pnk)), 2)
+                        for ec in ECKeys:       # Fix旋钮释放错误
+                            if ec == key:
+                                dd_dll.DD_key(dd_dll.DD_todc(conv_ord(Pnk)), 2)
                     
                     
 
