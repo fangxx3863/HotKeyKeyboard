@@ -1,0 +1,11 @@
+pywin32
+https://wqyjh.github.io/python-wheels/pyhook/pyhook-1.5.1-cp37-cp37m-win32.whl
+serial
+wheel
+pySerial
+pyuserinput
+PySimpleGUI
+ConfigObj
+retrying
+VirtualKey
+comtypes

@@ -19,9 +19,11 @@ import queue
 import time
 import ctypes
 
+import retrying
+from retrying import retry
+
 m = PyMouse()
 k = PyKeyboard()
-q = Queue()
 
 def newConf(Name):
     config = ConfigObj("setting.ini",encoding='UTF8')
@@ -95,11 +97,12 @@ def choiceValue(callback, t):
     decodeValue = callback[t]
     return decodeValue
 
+@retry(wait_fixed=5000)
 def serial_ports():
     if sys.platform.startswith('win'):
         ports = ['COM%s' % (i + 1) for i in range(256)]
     elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
-        # this excludes your current terminal"/dev/tty"
+        # 这不包括当前的终端"/dev/tty"
         ports = glob.glob('/dev/tty[A-Za-z]*')
     elif sys.platform.startswith('darwin'):
         ports = glob.glob('/dev/tty.*')
@@ -114,6 +117,10 @@ def serial_ports():
             result.append(port)
         except (OSError, serial.SerialException):
             pass
+    if len(result) == 0:
+        s.close()
+        raise Exception     # 结果为空抛出异常
+    s.close()
     return result
 
 def readLowPc(ser):
@@ -135,17 +142,20 @@ def findDevice():
         ser = serial.Serial(devId, 115200)
         t = 0
         while t < 12000:
+            print("查找次数：", t)
             ser.write('Check'.encode("utf8"))       # 发送Check命令
             count = ser.inWaiting() # 获取串口缓冲区数据
             t += 1
             if count !=0 :
                 recv = str(ser.readline()[0:-2].decode("utf8")) # 读出串口数据，数据采用utf8编码
                 if recv == "this":      # 检测下位机是否返回数据
+                    ser.close()
                     return devId
                     break
 
 def setKey(setKeyValue, newConfValue):
     device = findDevice()       # 查找下位机设备ID
+    print("找到的设备：", device)
     ser = serial.Serial(device, 115200)     # 初始化下位机读取
     
     PdevKeys = {'A_P': 'K01', 'B_P': 'K02', 'C_P': 'K03', 'D_P': 'K04',

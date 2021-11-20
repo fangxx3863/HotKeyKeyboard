@@ -154,7 +154,7 @@ def choiceValue(callback, t):
     decodeValue = callback[t]
     return decodeValue
 
-@retry(wait_fixed=500)
+@retry(wait_fixed=5000)
 def serial_ports():
     if sys.platform.startswith('win'):
         ports = ['COM%s' % (i + 1) for i in range(256)]
@@ -177,11 +177,15 @@ def serial_ports():
     if len(result) == 0:
         s.close()
         raise Exception     # 结果为空抛出异常
+    s.close()
     return result
 
 def readLowPc(ser):
     count = ser.inWaiting() # 获取串口缓冲区数据
-    recv = str(ser.readline()[0:-2].decode("utf8")) # 读出串口数据，数据采用utf8编码
+    try:
+        recv = str(ser.readline()[0:-2].decode("utf8")) # 读出串口数据，数据采用utf8编码
+    except:
+        recv = str(ser.readline()[0:-2].decode("utf8")) # 再次读出串口数据，数据采用utf8编码
     return recv     # 返回值为str
 
 def readLowPcList(ser):
@@ -198,17 +202,20 @@ def findDevice():
         ser = serial.Serial(devId, 115200)
         t = 0
         while t < 12000:
+            print("查找次数：", t)
             ser.write('Check'.encode("utf8"))       # 发送Check命令
             count = ser.inWaiting() # 获取串口缓冲区数据
             t += 1
             if count !=0 :
                 recv = str(ser.readline()[0:-2].decode("utf8")) # 读出串口数据，数据采用utf8编码
                 if recv == "this":      # 检测下位机是否返回数据
+                    ser.close()
                     return devId
                     break
 
 def setKey(setKeyValue, newConfValue):
     device = findDevice()       # 查找下位机设备ID
+    print("找到的设备：", device)
     ser = serial.Serial(device, 115200)     # 初始化下位机读取
     
     PdevKeys = {'A_P': 'K01', 'B_P': 'K02', 'C_P': 'K03', 'D_P': 'K04',
@@ -222,6 +229,9 @@ def setKey(setKeyValue, newConfValue):
                 'E_R': 'K05', 'F_R': 'K06', 'G_R': 'K07', 'H_R': 'K08',
                 'I_R': 'K09', 'J_R': 'K10', 'K_R': 'K11', 'L_R': 'K12',
                 'SW1_R': 'EC1_SW', 'SW2_R': 'EC2_SW'}       # 下位机按键松开的回报值字典
+
+    ECKeys = ['D1_1', 'D1_-1', 
+              'D2_1', 'D2_-1']      # 全部EC键
     
     allList = readList()        # 读取配置文件中的全部配置
     nowConf = readConf(allList[setKeyValue.value])      # CMD的字典
@@ -231,12 +241,9 @@ def setKey(setKeyValue, newConfValue):
             nowConf = readConf(allList[setKeyValue.value])      # CMD的字典
             newConfValue.value = 0
 
-        try:
-            key = readLowPc(ser)        # 读取下位机回报数据
-        except:
-            device = findDevice()       # 查找下位机设备ID
-            ser = serial.Serial(device, 115200)     # 初始化下位机读取
-            key = readLowPc(ser)        # 读取下位机回报数据
+
+        key = readLowPc(ser)        # 读取下位机回报数据
+        print("收到的数据：",key)
 
         # Press
         for i in PdevKeys.keys():
@@ -247,6 +254,7 @@ def setKey(setKeyValue, newConfValue):
             if key == i:
                 if checkList(nowConf[PdevKeys[i]]) is True:     # 有加号
                     PressKeys(decodeList(nowConf[PdevKeys[i]]))      # 有问题，暂时用回旧方案（已修复）
+                    print(decodeList(nowConf[PdevKeys[i]]))
                     # k.press_keys(decodeList(nowConf[PdevKeys[i]]))
                 elif checkList(nowConf[PdevKeys[i]]) is False:      # 没有加号
                     if nowConf[PdevKeys[i]] == 'up':
@@ -259,6 +267,12 @@ def setKey(setKeyValue, newConfValue):
                         m.scroll(0, -1)
                     else:
                         PressKey(conv_ord(nowConf[PdevKeys[i]]))
+
+                for ec in ECKeys:       # Fix旋钮释放错误
+                    if ec == key:
+                        print('ECRelese')
+                        ReleaseKey(conv_ord(nowConf[PdevKeys[i]]))
+
 
         # Release
         for i in RdevKeys.keys():
@@ -331,7 +345,7 @@ def gui():
             i = 0
             for i in keys:      # 遍历现在的配置文件的字典的全部键值
                 sgCmd = Cmd[i]      # 获取现在的配置的字典的第i个值
-                print("keys: " + i + " sgCmd: " + sgCmd)
+                print("读写配置: " + i + " sgCmd: " + sgCmd)
                 window[i].Update(value=sgCmd)       # 更新现在的配置的字典的第i个值的文本输入框内容为sgCmd
 
         if event == '_saveConf':
