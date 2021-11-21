@@ -184,7 +184,10 @@ def serial_ports():
 
 def readLowPc(ser):
     count = ser.inWaiting() # 获取串口缓冲区数据
-    recv = str(ser.readline()[0:-2].decode("utf8")) # 读出串口数据，数据采用utf8编码
+    try:
+        recv = str(ser.readline()[0:-2].decode("utf8")) # 读出串口数据，数据采用utf8编码
+    except:
+        recv = "Empty"
     return recv     # 返回值为str
 
 def readLowPcList(ser):

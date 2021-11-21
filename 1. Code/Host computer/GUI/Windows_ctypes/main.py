@@ -185,7 +185,7 @@ def readLowPc(ser):
     try:
         recv = str(ser.readline()[0:-2].decode("utf8")) # 读出串口数据，数据采用utf8编码
     except:
-        recv = str(ser.readline()[0:-2].decode("utf8")) # 再次读出串口数据，数据采用utf8编码
+        recv = "Empty"
     return recv     # 返回值为str
 
 def readLowPcList(ser):
